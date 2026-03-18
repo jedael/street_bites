@@ -25,34 +25,6 @@ router.get('/', async (_req: Request, res: Response) => {
 
 /**
  * @swagger
- * /customers/{id}:
- *   get:
- *     summary: Get customer by id
- *     tags: [Customers]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Customer detail
- *       404:
- *         description: Customer not found
- */
-router.get('/:id', async (req: Request, res: Response) => {
-  try {
-    const customer = await prisma.customer.findUnique({ where: { id: req.params.id } });
-    if (!customer) return res.status(404).json({ error: 'Not found', message: 'Customer not found' });
-    res.json(customer);
-  } catch (error) {
-    res.status(500).json({ error: 'Internal server error', message: String(error) });
-  }
-});
-
-/**
- * @swagger
  * /customers/email/{email}:
  *   get:
  *     summary: Find customer by email
@@ -72,6 +44,34 @@ router.get('/:id', async (req: Request, res: Response) => {
 router.get('/email/:email', async (req: Request, res: Response) => {
   try {
     const customer = await prisma.customer.findUnique({ where: { email: req.params.email } });
+    if (!customer) return res.status(404).json({ error: 'Not found', message: 'Customer not found' });
+    res.json(customer);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error', message: String(error) });
+  }
+});
+
+/**
+ * @swagger
+ * /customers/{id}:
+ *   get:
+ *     summary: Get customer by id
+ *     tags: [Customers]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Customer detail
+ *       404:
+ *         description: Customer not found
+ */
+router.get('/:id', async (req: Request, res: Response) => {
+  try {
+    const customer = await prisma.customer.findUnique({ where: { id: req.params.id } });
     if (!customer) return res.status(404).json({ error: 'Not found', message: 'Customer not found' });
     res.json(customer);
   } catch (error) {
