@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/client"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./menu.db"
+}
+
+model Category {
+  id            String    @id @default(uuid())
+  name          String
+  description   String?
+  display_order Int       @default(0)
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+  products      Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id               String   @id @default(uuid())
+  name             String
+  description      String?
+  price            Float
+  category_id      String
+  image_url        String?
+  is_available     Boolean  @default(true)
+  preparation_time Int      @default(15)
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+  category         Category @relation(fields: [category_id], references: [id])
+
+  @@map("products")
+}

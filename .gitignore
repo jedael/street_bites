@@ -1,0 +1,38 @@
+# Dépendances
+node_modules/
+
+# Build
+dist/
+build/
+
+# Prisma - client généré (régénéré via prisma generate)
+**/generated/
+**/.prisma/
+
+# Variables d'environnement
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Vite
+*.local
+
+# NOTE : Les fichiers .db SQLite sont committés volontairement
+# pour faciliter la correction (cf. consignes du TP)

@@ -1,0 +1,20 @@
+{
+  "name": "street-bites",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "services/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm -w menu-service run dev\" \"npm -w customer-service run dev\" \"npm -w order-service run dev\" \"npm -w web run dev\"",
+    "build": "npm -ws run build",
+    "prisma:migrate": "npm -w menu-service run prisma:migrate && npm -w customer-service run prisma:migrate && npm -w order-service run prisma:migrate",
+    "prisma:seed": "npm -w menu-service run prisma:seed && npm -w customer-service run prisma:seed"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "typescript": "^5.3.3"
+  }
+}

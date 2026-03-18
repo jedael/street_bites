@@ -1,282 +1,122 @@
-# 🍔 Street Bites - Système de Commande
+# Street Bites - Système de Commande
 
-## 👥 Équipe
+## Équipe
 
-**Binôme :**
-Krynen & Rousseau
-
-**Formation :** EPSI Bachelor 3 - DevOps  
+**Binôme :** Krynen & Rousseau
+**Formation :** EPSI Bachelor 3 - DevOps
 **Année :** 2024-2025
 
 ---
 
-## 📋 Description du projet
+## Description
 
-Street Bites est une application de commande en ligne pour un food truck. Le système permet aux clients de consulter le menu, passer des commandes depuis leur smartphone, et de suivre l'état de préparation de leur repas.
-
-Le gérant peut gérer son menu (catégories, produits) et suivre les commandes en temps réel depuis une interface dédiée.
+Street Bites est une application de commande en ligne pour un food truck. Les clients consultent le menu, passent commande depuis leur navigateur et suivent l'état de préparation en temps réel. Le gérant gère son menu et les commandes depuis une interface dédiée.
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
-Ce projet utilise une **architecture microservices** avec :
-
-- **3 services backend indépendants** (Node.js + Express + TypeScript)
-- **3 bases de données SQLite** (une par service)
-- **1 application web frontend** (React/Vue/Angular/Svelte)
-- **1 package partagé** (types TypeScript + utilitaires)
-
-### Services
-
-#### 🍽️ Menu Service
-Gère les catégories et les produits du menu.
-- Base de données : `menu.db`
-- Port : 3001
-- Endpoints : `/categories`, `/products`
-
-#### 👤 Customer Service
-Gère les clients et leur historique de commandes.
-- Base de données : `customer.db`
-- Port : 3002
-- Endpoints : `/customers`
-
-#### 📦 Order Service
-Orchestre les commandes en communiquant avec les autres services.
-- Base de données : `order.db`
-- Port : 3003
-- Endpoints : `/orders`
-
-#### 🌐 Web App
-Application frontend pour les clients et le gérant.
-- Port : 5173 (Vite) ou 3000 (selon le framework)
-
----
-
-## 🛠️ Stack Technique
-
-### Backend
-- **Runtime :** Node.js
-- **Framework :** Express.js
-- **Language :** TypeScript
-- **ORM :** Prisma
-- **Base de données :** SQLite (1 par service)
-- **Documentation API :** Swagger/OpenAPI
-
-### Frontend
-- **Framework :** [À compléter : React/Vue/Angular/Svelte]
-- **Build tool :** Vite (ou autre)
-- **Styling :** [À compléter : CSS/Tailwind/MUI/etc.]
-
-### DevOps
-- **Gestionnaire de packages :** pnpm (monorepo)
-- **Versioning :** Git / GitHub
-- **Containerisation :** Docker (optionnel)
-
----
-
-## 📁 Structure du projet
+Monorepo en **architecture microservices** :
 
 ```
-street-bites/
-│
+street_bites/
 ├── apps/
-│   └── web/                    # Application frontend
-│       ├── src/
-│       ├── public/
-│       └── package.json
-│
+│   └── web/                  # Frontend React + Vite (port 5173)
 ├── services/
-│   ├── menu-service/           # Service de gestion du menu
-│   │   ├── src/
-│   │   ├── prisma/
-│   │   │   └── schema.prisma
-│   │   └── package.json
-│   │
-│   ├── customer-service/       # Service de gestion des clients
-│   │   ├── src/
-│   │   ├── prisma/
-│   │   │   └── schema.prisma
-│   │   └── package.json
-│   │
-│   └── order-service/          # Service de gestion des commandes
-│       ├── src/
-│       ├── prisma/
-│       │   └── schema.prisma
-│       └── package.json
-│
-├── packages/
-│   └── shared/                 # Code partagé entre services
-│       ├── src/
-│       └── package.json
-│
-├── .gitignore
-├── package.json                # Configuration du monorepo
-├── pnpm-workspace.yaml         # Configuration workspace pnpm
-├── tsconfig.base.json          # Configuration TypeScript de base
-├── docker-compose.yml          # (Optionnel) Pour orchestrer les services
-└── README.md                   # Ce fichier
+│   ├── menu_service/         # Gestion catégories & produits (port 3001)
+│   ├── customer_service/     # Gestion clients & historique (port 3002)
+│   └── order_service/        # Gestion commandes (port 3003)
+└── packages/
+    └── shared/               # Types TypeScript partagés
 ```
 
 ---
 
-## 🚀 Installation
+## Stack Technique
+
+| Couche | Technologie |
+|--------|------------|
+| Backend | Node.js + Express + TypeScript |
+| ORM | Prisma |
+| Base de données | SQLite (1 fichier par service) |
+| Documentation API | Swagger / OpenAPI 3.0 |
+| Frontend | React 18 + Vite + TypeScript |
+| Monorepo | npm workspaces |
+
+---
+
+## Installation
 
 ### Prérequis
 
-- Node.js (v18 ou supérieur)
-- pnpm (gestionnaire de packages)
+- Node.js v18 ou supérieur (npm inclus)
+
+### Étapes
 
 ```bash
-# Installer pnpm si nécessaire
-npm install -g pnpm
+# 1. Cloner le repository
+git clone https://github.com/<username>/street-bites.git
+cd street_bites
+
+# 2. Installer toutes les dépendances
+npm install
+
+# 3. Générer les clients Prisma
+npm -w menu-service run prisma:generate
+npm -w customer-service run prisma:generate
+npm -w order-service run prisma:generate
+
+# 4. Créer les bases de données
+npm run prisma:migrate
+
+# 5. Peupler avec des données d'exemple
+npm run prisma:seed
+
+# 6. Lancer tous les services
+npm run dev
 ```
 
-### Étapes d'installation
-
-1. **Cloner le repository**
-```bash
-git clone https://github.com/[votre-username]/street-bites.git
-cd street-bites
-```
-
-2. **Installer les dépendances**
-```bash
-pnpm install
-```
-
-3. **Initialiser les bases de données**
-```bash
-# Pour chaque service
-pnpm --filter menu-service prisma migrate dev
-pnpm --filter customer-service prisma migrate dev
-pnpm --filter order-service prisma migrate dev
-
-# Générer les clients Prisma
-pnpm --filter menu-service prisma generate
-pnpm --filter customer-service prisma generate
-pnpm --filter order-service prisma generate
-```
-
-4. **Populer les bases de données (optionnel)**
-```bash
-pnpm --filter menu-service prisma db seed
-pnpm --filter customer-service prisma db seed
-pnpm --filter order-service prisma db seed
-```
+> Les fichiers `.db` SQLite sont inclus dans le repository pour faciliter la correction (cf. consignes du TP). Les étapes 3 à 5 ne sont donc nécessaires qu'en cas de réinitialisation.
 
 ---
 
-## 🎯 Utilisation
+## URLs
 
-### Démarrer tous les services
-
-```bash
-# En mode développement
-pnpm dev
-```
-
-Ou démarrer chaque service individuellement :
-
-```bash
-# Service Menu
-pnpm --filter menu-service dev
-
-# Service Customer
-pnpm --filter customer-service dev
-
-# Service Order
-pnpm --filter order-service dev
-
-# Application Web
-pnpm --filter web dev
-```
-
-### Accéder aux applications
-
-- **Application Web :** http://localhost:5173 (ou 3000)
-- **Menu Service API :** http://localhost:3001
-- **Customer Service API :** http://localhost:3002
-- **Order Service API :** http://localhost:3003
-
-### Documentation API (Swagger)
-
-- **Menu Service :** http://localhost:3001/api-docs
-- **Customer Service :** http://localhost:3002/api-docs
-- **Order Service :** http://localhost:3003/api-docs
+| Service | URL |
+|---------|-----|
+| Application web | http://localhost:5173 |
+| Menu Service API + Swagger | http://localhost:3001/api-docs |
+| Customer Service API + Swagger | http://localhost:3002/api-docs |
+| Order Service API + Swagger | http://localhost:3003/api-docs |
 
 ---
 
-## 📱 Fonctionnalités
+## Fonctionnalités
 
-### Pour les clients
+### Pages frontend
 
-- ✅ Consulter le menu par catégories
-- ✅ Ajouter des produits au panier
-- ✅ Passer une commande
-- ✅ Suivre l'état de la commande en temps réel
-- ✅ Consulter l'historique de commandes
+| Page | Route | Description |
+|------|-------|-------------|
+| Menu | `/` | Catégories et produits, panier flottant |
+| Panier | `/cart` | Récapitulatif, formulaire client, historique |
+| Confirmation | `/order/:id` | Statut de la commande, rafraîchissement auto |
+| Cuisine | `/kitchen` | File de commandes + gestion du menu (gérant) |
 
-### Pour le gérant (interface cuisine)
-
-- ✅ Voir toutes les commandes en cours
-- ✅ Changer le statut des commandes
-- ✅ Gérer les catégories (CRUD)
-- ✅ Gérer les produits (CRUD)
-- ✅ Activer/désactiver la disponibilité des produits
-
----
-
-## 🔄 Flux de commande
+### Flux de commande
 
 ```
-1. Client consulte le menu → Menu Service
-2. Client ajoute au panier (frontend uniquement)
-3. Client valide la commande → Order Service
-   ├─ Vérifie le client → Customer Service
-   ├─ Vérifie les produits → Menu Service
-   └─ Crée la commande
-4. Gérant change le statut → Order Service
-5. Commande terminée → Order Service enregistre dans l'historique → Customer Service
+Client → /          Consulte le menu, ajoute au panier
+Client → /cart      Saisit son email/nom, valide la commande
+                      └─ Order Service vérifie le client (Customer Service)
+                      └─ Order Service vérifie les produits (Menu Service)
+                      └─ Snapshot des prix dans order_items
+Gérant → /kitchen   Confirme → Prépare → Prête → Terminée
+                      └─ Au passage en "Terminée" : enregistrement historique (Customer Service)
+Client → /cart      Retrouve son historique via son email
 ```
-
----
-
-## 🧪 Tests
-
-```bash
-# Lancer les tests de tous les services
-pnpm test
-
-# Tester un service spécifique
-pnpm --filter menu-service test
-```
-
----
-
-## 📊 Règles métier implémentées
-
-### Menu Service
-- ✅ Prix minimum d'un produit : 0.50€
-- ✅ Temps de préparation : entre 1 et 60 minutes
-- ✅ Un produit appartient obligatoirement à une catégorie
-- ✅ Impossible de supprimer une catégorie contenant des produits
-- ✅ Ordre d'affichage via `display_order`
-
-### Customer Service
-- ✅ Email unique et valide
-- ✅ Téléphone optionnel
-- ✅ Impossible de supprimer un client avec un historique
-
-### Order Service
-- ✅ Vérification de l'existence du client et des produits
-- ✅ Snapshot des prix/noms dans `order_items`
-- ✅ Calcul automatique de `estimated_ready_at`
-- ✅ Annulation possible uniquement si `pending` ou `confirmed`
-- ✅ Enregistrement dans l'historique au passage en `completed`
-- ✅ Au moins 1 article avec quantité ≥ 1
 
 ### Statuts de commande
+
 ```
 pending → cancelled
 pending → confirmed → cancelled
@@ -285,59 +125,41 @@ pending → confirmed → preparing → ready → completed
 
 ---
 
-## 🐳 Docker (optionnel)
+## Règles métier implémentées
 
-Si tu utilises Docker Compose :
+### Menu Service
+- Prix minimum : 0.50€
+- Temps de préparation : 1 à 60 minutes
+- Un produit appartient obligatoirement à une catégorie
+- Impossible de supprimer une catégorie contenant des produits
+- Ordre d'affichage via `display_order`
+
+### Customer Service
+- Email unique et valide
+- Téléphone optionnel
+- Impossible de supprimer un client avec un historique de commandes
+
+### Order Service
+- Vérification existence client et disponibilité des produits
+- Snapshot des prix et noms dans `order_items`
+- `estimated_ready_at` = maintenant + max(preparation_time) + 5 min
+- Annulation uniquement si `pending` ou `confirmed`
+- Enregistrement dans l'historique au passage en `completed`
+- Au moins 1 article avec quantité ≥ 1
+
+---
+
+## Scripts disponibles
 
 ```bash
-# Démarrer tous les services
-docker-compose up
-
-# Arrêter les services
-docker-compose down
+npm run dev              # Démarre tous les services en parallèle
+npm run build            # Build tous les packages
+npm run prisma:migrate   # Crée/migre les bases de données
+npm run prisma:seed      # Peuple avec des données d'exemple
 ```
 
 ---
 
-## 📝 Scripts disponibles
-
-```bash
-# Développement
-pnpm dev              # Démarre tous les services en mode dev
-
-# Build
-pnpm build            # Build tous les packages
-
-# Linting
-pnpm lint             # Vérifie le code
-
-# Formatage
-pnpm format           # Formate le code avec Prettier
-
-# Nettoyage
-pnpm clean            # Supprime node_modules et build
-```
-
----
-
-## 🤝 Contribution
-
-Ce projet est un exercice académique dans le cadre du Bachelor 3 à l'EPSI.
-
----
-
-## 📄 Licence
+## Licence
 
 Projet académique - EPSI 2024-2025
-
----
-
-## 📞 Contact
-
-Pour toute question concernant le projet :
-- [Ton email]
-- [Email de ton binôme]
-
----
-
-**Note :** Les bases de données SQLite sont incluses dans le repository pour faciliter la correction (contrairement aux bonnes pratiques habituelles).

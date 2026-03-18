@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/client"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./customer.db"
+}
+
+model Customer {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  name          String
+  phone         String?
+  created_at    DateTime       @default(now())
+  updated_at    DateTime       @updatedAt
+  order_history OrderHistory[]
+
+  @@map("customers")
+}
+
+model OrderHistory {
+  id           String   @id @default(uuid())
+  customer_id  String
+  order_id     String   @unique
+  total_amount Float
+  items_count  Int
+  created_at   DateTime @default(now())
+  customer     Customer @relation(fields: [customer_id], references: [id])
+
+  @@map("order_history")
+}

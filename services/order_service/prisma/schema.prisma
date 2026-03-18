@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/client"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./order.db"
+}
+
+model Order {
+  id                 String      @id @default(uuid())
+  customer_id        String
+  customer_name      String
+  customer_email     String
+  status             String      @default("pending")
+  total_amount       Float
+  estimated_ready_at DateTime?
+  created_at         DateTime    @default(now())
+  updated_at         DateTime    @updatedAt
+  items              OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id           String @id @default(uuid())
+  order_id     String
+  product_id   String
+  product_name String
+  unit_price   Float
+  quantity     Int
+  subtotal     Float
+  order        Order  @relation(fields: [order_id], references: [id])
+
+  @@map("order_items")
+}
