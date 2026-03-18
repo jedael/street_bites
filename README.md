@@ -1,121 +1,161 @@
-# Street Bites - Système de Commande
+# Street Bites
 
-## Équipe
+> Application de commande en ligne pour un food truck : les clients consultent le menu, passent commande depuis leur navigateur et suivent la préparation en temps réel, pendant que le gérant pilote ses commandes et son menu depuis une interface dédiée.
 
-**Binôme :** Krynen & Rousseau
-**Formation :** EPSI Bachelor 3 - DevOps
-**Année :** 2024-2025
-
----
-
-## Description
-
-Street Bites est une application de commande en ligne pour un food truck. Les clients consultent le menu, passent commande depuis leur navigateur et suivent l'état de préparation en temps réel. Le gérant gère son menu et les commandes depuis une interface dédiée.
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Stack](https://img.shields.io/badge/stack-Node.js%20%2B%20React%20%2B%20Prisma-informational)
+![Statut](https://img.shields.io/badge/statut-fonctionnel-brightgreen)
 
 ---
 
-## Architecture
+## Sommaire
 
-Monorepo en **architecture microservices** :
-
-```
-street_bites/
-├── apps/
-│   └── web/                  # Frontend React + Vite (port 5173)
-├── services/
-│   ├── menu_service/         # Gestion catégories & produits (port 3001)
-│   ├── customer_service/     # Gestion clients & historique (port 3002)
-│   └── order_service/        # Gestion commandes (port 3003)
-└── packages/
-    └── shared/               # Types TypeScript partagés
-```
+- [Présentation](#présentation)
+- [Prérequis](#prérequis)
+- [Installation](#installation)
+- [Lancement](#lancement)
+- [URLs et documentation](#urls-et-documentation)
+- [Structure du projet](#structure-du-projet)
+- [Fonctionnalités](#fonctionnalités)
+- [Équipe](#équipe)
 
 ---
 
-## Stack Technique
+## Présentation
 
-| Couche | Technologie |
-|--------|------------|
-| Backend | Node.js + Express + TypeScript |
-| ORM | Prisma |
-| Base de données | SQLite (1 fichier par service) |
-| Documentation API | Swagger / OpenAPI 3.0 |
-| Frontend | React 18 + Vite + TypeScript |
-| Monorepo | npm workspaces |
+Street Bites est un système de commande pour food truck développé en architecture microservices. Le projet comporte trois services backend indépendants, chacun avec sa propre base de données, et une application web frontend.
+
+**Fonctionnalités principales :**
+
+- Consultation du menu par catégories avec ajout au panier
+- Passage de commande avec suivi du statut en temps réel
+- Interface gérant pour piloter les commandes et gérer le menu (CRUD catégories et produits)
+- Historique de commandes par client via recherche par e-mail
+
+---
+
+## Prérequis
+
+| Outil | Version minimale | Lien |
+|-------|-----------------|------|
+| Node.js | 18.x | [nodejs.org](https://nodejs.org) |
+| npm | 7.x (inclus avec Node.js) | — |
 
 ---
 
 ## Installation
 
-### Prérequis
-
-- Node.js v18 ou supérieur (npm inclus)
-
-### Étapes
-
 ```bash
-# 1. Cloner le repository
+# 1. Cloner le dépôt
 git clone https://github.com/<username>/street-bites.git
 cd street_bites
 
-# 2. Installer toutes les dépendances
+# 2. Installer les dépendances de tous les services
 npm install
 
-# 3. Générer les clients Prisma
+# 3. Générer les clients Prisma (ORM)
 npm -w menu-service run prisma:generate
 npm -w customer-service run prisma:generate
 npm -w order-service run prisma:generate
 
-# 4. Créer les bases de données
+# 4. Créer les bases de données SQLite
 npm run prisma:migrate
+# Prisma demande un nom de migration → taper "init" puis Entrée (à répéter 3 fois)
 
 # 5. Peupler avec des données d'exemple
 npm run prisma:seed
-
-# 6. Lancer tous les services
-npm run dev
 ```
 
-> Les fichiers `.db` SQLite sont inclus dans le repository pour faciliter la correction (cf. consignes du TP). Les étapes 3 à 5 ne sont donc nécessaires qu'en cas de réinitialisation.
+> **Note :** Les fichiers `.db` SQLite sont inclus dans le dépôt pour faciliter la correction (conformément aux consignes du TP). Les étapes 3 à 5 ne sont donc nécessaires qu'en cas de réinitialisation complète.
 
 ---
 
-## URLs
+## Lancement
 
-| Service | URL |
-|---------|-----|
-| Application web | http://localhost:5173 |
-| Menu Service API + Swagger | http://localhost:3001/api-docs |
-| Customer Service API + Swagger | http://localhost:3002/api-docs |
-| Order Service API + Swagger | http://localhost:3003/api-docs |
+```bash
+# Démarrer tous les services en parallèle
+npm run dev
+```
+
+Les quatre processus (3 services backend + frontend) démarrent automatiquement via `concurrently`.
+
+Pour démarrer un service individuellement :
+
+```bash
+npm -w menu-service run dev       # Menu Service
+npm -w customer-service run dev   # Customer Service
+npm -w order-service run dev      # Order Service
+npm -w web run dev                # Application web
+```
+
+---
+
+## URLs et documentation
+
+| Service | URL | Documentation |
+|---------|-----|---------------|
+| Application web | http://localhost:5173 | — |
+| Menu Service | http://localhost:3001 | http://localhost:3001/api-docs |
+| Customer Service | http://localhost:3002 | http://localhost:3002/api-docs |
+| Order Service | http://localhost:3003 | http://localhost:3003/api-docs |
+
+---
+
+## Structure du projet
+
+```
+street_bites/
+├── apps/
+│   └── web/                  # Frontend — React 18 + Vite + TypeScript
+├── services/
+│   ├── menu_service/         # Gestion des catégories et produits (port 3001)
+│   ├── customer_service/     # Gestion des clients et historique (port 3002)
+│   └── order_service/        # Gestion des commandes, orchestration (port 3003)
+├── packages/
+│   └── shared/               # Types TypeScript partagés entre les services
+├── package.json              # Configuration du monorepo (npm workspaces)
+└── tsconfig.base.json        # Configuration TypeScript de base
+```
+
+Chaque service contient :
+
+```
+<service>/
+├── prisma/
+│   ├── schema.prisma         # Schéma de la base de données
+│   ├── seed.ts               # Données d'exemple
+│   └── <service>.db          # Base de données SQLite
+└── src/
+    ├── index.ts              # Point d'entrée Express + Swagger
+    └── routes/               # Définition des endpoints
+```
 
 ---
 
 ## Fonctionnalités
 
-### Pages frontend
+### Pages de l'application
 
 | Page | Route | Description |
 |------|-------|-------------|
 | Menu | `/` | Catégories et produits, panier flottant |
-| Panier | `/cart` | Récapitulatif, formulaire client, historique |
-| Confirmation | `/order/:id` | Statut de la commande, rafraîchissement auto |
-| Cuisine | `/kitchen` | File de commandes + gestion du menu (gérant) |
+| Panier | `/cart` | Récapitulatif, formulaire client, historique par e-mail |
+| Confirmation | `/order/:id` | Statut de la commande, rafraîchissement automatique toutes les 10 s |
+| Cuisine | `/kitchen` | File de commandes active + CRUD menu (vue gérant) |
 
 ### Flux de commande
 
 ```
-Client → /          Consulte le menu, ajoute au panier
-Client → /cart      Saisit son email/nom, valide la commande
-                      └─ Order Service vérifie le client (Customer Service)
-                      └─ Order Service vérifie les produits (Menu Service)
-                      └─ Snapshot des prix dans order_items
-Gérant → /kitchen   Confirme → Prépare → Prête → Terminée
-                      └─ Au passage en "Terminée" : enregistrement historique (Customer Service)
-Client → /cart      Retrouve son historique via son email
+1. Client → ajoute des produits au panier depuis la page Menu
+2. Client → valide sur /cart en saisissant son nom et son e-mail
+3. Order Service → vérifie le client (Customer Service) et les produits (Menu Service)
+4. Order Service → crée la commande avec snapshot des prix et estimation de prêt
+5. Gérant → fait avancer la commande : En attente → Confirmée → En préparation → Prête → Terminée
+6. Order Service → enregistre la commande dans l'historique du client (Customer Service)
+7. Client → retrouve son historique en saisissant son e-mail sur /cart
 ```
 
-### Statuts de commande
+### Statuts d'une commande
 
 ```
 pending → cancelled
@@ -123,43 +163,30 @@ pending → confirmed → cancelled
 pending → confirmed → preparing → ready → completed
 ```
 
----
+### Règles métier
 
-## Règles métier implémentées
-
-### Menu Service
-- Prix minimum : 0.50€
-- Temps de préparation : 1 à 60 minutes
-- Un produit appartient obligatoirement à une catégorie
+- Prix minimum d'un produit : 0,50 €
+- Temps de préparation : entre 1 et 60 minutes
 - Impossible de supprimer une catégorie contenant des produits
-- Ordre d'affichage via `display_order`
-
-### Customer Service
-- Email unique et valide
-- Téléphone optionnel
-- Impossible de supprimer un client avec un historique de commandes
-
-### Order Service
-- Vérification existence client et disponibilité des produits
-- Snapshot des prix et noms dans `order_items`
-- `estimated_ready_at` = maintenant + max(preparation_time) + 5 min
-- Annulation uniquement si `pending` ou `confirmed`
-- Enregistrement dans l'historique au passage en `completed`
-- Au moins 1 article avec quantité ≥ 1
+- E-mail client unique et valide
+- Annulation possible uniquement si la commande est `pending` ou `confirmed`
+- Au moins 1 article avec une quantité ≥ 1 par commande
 
 ---
 
-## Scripts disponibles
+## Équipe
 
-```bash
-npm run dev              # Démarre tous les services en parallèle
-npm run build            # Build tous les packages
-npm run prisma:migrate   # Crée/migre les bases de données
-npm run prisma:seed      # Peuple avec des données d'exemple
-```
+| Nom | Formation |
+|-----|-----------|
+| Krynen | EPSI Bachelor 3 DevOps FullStack — 2024-2025 |
+| Rousseau | EPSI Bachelor 3 DevOps FullStack — 2024-2025 |
 
 ---
 
 ## Licence
 
-Projet académique - EPSI 2024-2025
+Projet académique — EPSI 2024-2025
+
+---
+
+*Dernière mise à jour : mars 2026*
