@@ -14,6 +14,8 @@
 - [Prérequis](#prérequis)
 - [Installation](#installation)
 - [Lancement](#lancement)
+- [Variables d'environnement](#variables-denvironnement)
+- [Tests](#tests)
 - [URLs et documentation](#urls-et-documentation)
 - [Structure du projet](#structure-du-projet)
 - [Fonctionnalités](#fonctionnalités)
@@ -47,7 +49,7 @@ Street Bites est un système de commande pour food truck développé en architec
 
 ```bash
 # 1. Cloner le dépôt
-git clone https://github.com/<username>/street-bites.git
+git clone https://github.com/jdkrynen-beep/street_bites.git
 cd street_bites
 
 # 2. Installer les dépendances de tous les services
@@ -60,7 +62,6 @@ npm -w order-service run prisma:generate
 
 # 4. Créer les bases de données SQLite
 npm run prisma:migrate
-# Prisma demande un nom de migration → taper "init" puis Entrée (à répéter 3 fois)
 
 # 5. Peupler avec des données d'exemple
 npm run prisma:seed
@@ -87,6 +88,36 @@ npm -w customer-service run dev   # Customer Service
 npm -w order-service run dev      # Order Service
 npm -w web run dev                # Application web
 ```
+
+---
+
+## Variables d'environnement
+
+Aucun fichier `.env` n'est requis pour lancer le projet en local : toutes les valeurs ont des défauts codés en dur dans chaque service.
+
+| Variable | Service | Valeur par défaut | Description |
+|----------|---------|-------------------|-------------|
+| `PORT` | menu-service | `3001` | Port d'écoute |
+| `PORT` | customer-service | `3002` | Port d'écoute |
+| `PORT` | order-service | `3003` | Port d'écoute |
+| `MENU_SERVICE_URL` | order-service | `http://localhost:3001` | URL du Menu Service |
+| `CUSTOMER_SERVICE_URL` | order-service | `http://localhost:3002` | URL du Customer Service |
+
+Pour changer un port, créer un fichier `.env` dans le dossier du service concerné avec la variable souhaitée.
+
+---
+
+## Tests
+
+Aucun test automatisé n'est implémenté dans cette version du projet. Les fonctionnalités peuvent être validées manuellement :
+
+1. Ouvrir l'application web sur http://localhost:5173
+2. Parcourir le menu et ajouter des produits au panier
+3. Passer une commande depuis `/cart`
+4. Suivre et faire avancer la commande depuis `/kitchen`
+5. Vérifier l'historique en ressaisissant l'e-mail sur `/cart`
+
+Les endpoints API sont documentés et testables interactivement via Swagger UI sur chaque service (voir section [URLs et documentation](#urls-et-documentation)).
 
 ---
 
@@ -178,14 +209,14 @@ pending → confirmed → preparing → ready → completed
 
 | Nom | Formation |
 |-----|-----------|
-| Krynen | EPSI Bachelor 3 DevOps FullStack — 2024-2025 |
-| Rousseau | EPSI Bachelor 3 DevOps FullStack — 2024-2025 |
+| Krynen | EPSI Bachelor 3 DevOps FullStack — 2025-2026 |
+| Rousseau | EPSI Bachelor 3 DevOps FullStack — 2025-2026 |
 
 ---
 
 ## Licence
 
-Projet académique — EPSI 2024-2025
+Projet académique — EPSI 2025-2026
 
 ---
 
